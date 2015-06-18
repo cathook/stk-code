@@ -25,7 +25,13 @@ class Vector2D {
 
   double set_y(double val) { y_ = val; return y(); }
 
+  double Dot(const Vector2D &b) const { return x() * b.x() + y() * b.y(); }
+
   double Cross(const Vector2D &b) const { return x() * b.y() - y() * b.x(); }
+
+  double Length2() const { return Dot(*this); }
+
+  double Length() const { return sqrt(Length2()); }
 
   Vector2D operator+(const Vector2D &b) const {
     return Vector2D(x() + b.x(), y() + b.y());
