@@ -6,12 +6,12 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/opencv.hpp>
 
-#include "webcam/util.hpp"
-
 #include <vector>
 #include <iostream>
 #include <cstdio>
 #include <algorithm>
+
+#include "webcam/vector.hpp"
 
 namespace webcam {
 bool getScaledDots(Vector2D *left, Vector2D *middle, Vector2D *right);

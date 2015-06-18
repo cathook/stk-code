@@ -1,8 +1,7 @@
 #ifndef WEBCAM_CHURCH_METHOD_HPP
 #define WEBCAM_CHURCH_METHOD_HPP
 
-
-#include "webcam/util.hpp"
+#include "webcam/vector.hpp"
 
 
 namespace webcam {
