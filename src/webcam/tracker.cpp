@@ -1,14 +1,13 @@
-//tracker.hpp
+#include <stdio.h>
 
-#include <opencv2/objdetect/objdetect.hpp>
+#include <algorithm>
+#include <iostream>
+#include <vector>
+
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/opencv.hpp>
-
-#include <vector>
-#include <iostream>
-#include <cstdio>
-#include <algorithm>
 
 #include "webcam/tracker.hpp"
 
@@ -19,20 +18,26 @@ using namespace std;
 using namespace cv;
 
 namespace {
-  CvCapture *Camera;
-}
+
+CvCapture *camera;
+
+double aspect_ratio;
+
+}  // namespace
+
 
 namespace webcam {
 
-Mat getShot() {
+
+Mat GetShot() {
   Mat frame, rFrame;
 
-  if (!Camera) {
-    printf("No camera, please call webcam::initCamera()\n");
+  if (!camera) {
+    printf("No camera, please call webcam::InitTracker()\n");
     return frame;
   }
 
-  IplImage* iplImg = cvQueryFrame(Camera);
+  IplImage* iplImg = cvQueryFrame(camera);
 
   frame = cvarrToMat(iplImg);
   if (frame.empty()) return frame;
@@ -43,11 +48,19 @@ Mat getShot() {
   }
 }
 
-void initCamera() {
-  Camera =  cvCaptureFromCAM(0);
+
+void InitTracker() {
+  camera =  cvCaptureFromCAM(0);
+  // TODO: aspect_ratio = ??
 }
 
-Mat threshold(Mat& image) {
+
+double GetAspectRatio() {
+  return aspect_ratio;
+}
+
+
+Mat Threshold(Mat& image) {
   Mat hsvImage, bitmapLow, bitmapHigh, bitmap;
   cvtColor(image, hsvImage, COLOR_BGR2HSV);
   inRange(hsvImage, Scalar(50,100,100), Scalar(160,255,255), bitmap);
@@ -55,21 +68,25 @@ Mat threshold(Mat& image) {
   return bitmap;
 }
 
-bool circleSort(Vec3f a, Vec3f b) {
+
+bool CircleSort(Vec3f a, Vec3f b) {
   return a[0] == b[0] ? (a[1] < b[1]) : (a[0] < b[0]);
 }
 
-vector<Vec3f> findCircles(Mat &image_) {
+
+vector<Vec3f> FindCircles(Mat &image_) {
   Mat image;
   image_.convertTo(image, CV_8U);
   vector<Vec3f> circles;
-  HoughCircles(image, circles, CV_HOUGH_GRADIENT, 1, image.rows / 100, 100, 25, 0, 0);
+  HoughCircles(
+      image, circles, CV_HOUGH_GRADIENT, 1, image.rows / 100, 100, 25, 0, 0);
   printf("find %lu circles\n", circles.size());
-  sort(circles.begin(), circles.end(), circleSort);
+  sort(circles.begin(), circles.end(), CircleSort);
   return circles;
 }
 
-void plotCircles(Mat &image, vector<Vec3f> &circles) {
+
+void PlotCircles(Mat &image, vector<Vec3f> &circles) {
   for (size_t i = 0; i < circles.size() ; i++) {
     Point center(round(circles[i][0]), round(circles[i][1]));
     int radius = round(circles[i][2]);
@@ -77,13 +94,14 @@ void plotCircles(Mat &image, vector<Vec3f> &circles) {
   }
 }
 
-bool getScaledDots(Vector2D *left, Vector2D *middle, Vector2D *right) {
-  Mat rawImage = getShot();
-  cvNamedWindow("result", CV_WINDOW_AUTOSIZE);
-  Mat image = threshold(rawImage);
-  vector<Vec3f> circles = findCircles(image);
 
-  plotCircles(rawImage, circles);
+bool GetScaledDots(Vector2D *left, Vector2D *middle, Vector2D *right) {
+  Mat rawImage = GetShot();
+  cvNamedWindow("result", CV_WINDOW_AUTOSIZE);
+  Mat image = Threshold(rawImage);
+  vector<Vec3f> circles = FindCircles(image);
+
+  PlotCircles(rawImage, circles);
   imshow("result", image);
 #ifdef VR_FINAL_TEST
   waitKey(0);
@@ -117,9 +135,9 @@ class Test : public UnitTest {
   Test() : UnitTest("camera test") {
     Vector2D a, b, c;
 
-    initCamera();
+    InitTracker();
 
-    if (getScaledDots(&a, &b, &c)) {
+    if (GetScaledDots(&a, &b, &c)) {
       printf("%f %f\n", a.x(), a.y());
       printf("%f %f\n", b.x(), b.y());
       printf("%f %f\n", c.x(), c.y());
@@ -130,7 +148,7 @@ class Test : public UnitTest {
     scanf("%s", s);
     SetResult(s[0] == 'y' || s[0] == 'Y');
   }
-  
+
  private:
   static Test _;
 };
