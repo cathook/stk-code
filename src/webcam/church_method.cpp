@@ -102,25 +102,33 @@ bool ChurchMethod::Update_() const {
   std::vector<Function<Vector3D>> funcs;
   for (int i = 0; i < 3; ++i) {
     for (int j = i + 1; j < 3; ++j) {
-      funcs.push_back(
-          AbsFunction() | (IncludedAngle3DFunction(world_p_[i], world_p_[j]) -
-                           ConstantFunction<Vector3D>(
-                               photo_p_[i].IncludedAngle(photo_p_[j]))));
+//      funcs.push_back(
+//          AbsFunction() | (IncludedAngle3DFunction(world_p_[i], world_p_[j]) -
+//                           ConstantFunction<Vector3D>(
+//                               photo_p_[i].IncludedAngle(photo_p_[j]))));
+      funcs.push_back(IncludedAngle3DFunction(world_p_[i], world_p_[j]) -
+                      ConstantFunction<Vector3D>(
+                          photo_p_[i].IncludedAngle(photo_p_[j])));
+      funcs[funcs.size() - 1].set_n(2);
     }
   }
   size_t ok_ct = 0;
   for (int i = 0; ok_ct < funcs.size() && i < max_round_; ++i) {
     int id = i % funcs.size();
-    bool ok = false;
-    for (int j = 0; j < max_round_ && !ok; ++j) {
+    int ok_j = -1;
+    for (int j = 0; j < max_round_ && ok_j < 0; ++j) {
       double value = funcs[id].GetValue(camera_p_);
+//      printf("camera %s   ", camera_p_.ToString().c_str());
       if (value < eps_) {
-        ok = true;
+        printf("\n");
+        ok_j = j;
       } else {
-        camera_p_ -= funcs[id].GetDerivValue(camera_p_) * 70;
+//        printf(" delta = %s\n", funcs[id].GetDerivValue(camera_p_).ToString().c_str());
+        camera_p_ -= funcs[id].GetDerivValue(camera_p_) * 100;
       }
     }
-    if (ok) {
+//    printf("next\n");
+    if (ok_j == 0) {
       ok_ct += 1;
     } else {
       ok_ct = 0;
@@ -172,33 +180,43 @@ class Test1 : public UnitTest {
  public:
   Test1() : UnitTest("church method 1") {
     bool ret = true;
-    for (int i = 0; i < 10; ++i) {
-      double f = int(1.0 * rand() / RAND_MAX * 5 + 5);
-      Vector2D p1, p2, p3;
-      while (fabs((p2 - p1).Cross(p3 - p1)) < 2) {
-        p1 = Vector2D(int(1.0 * rand() / RAND_MAX * 10 - 5),
-                      int(1.0 * rand() / RAND_MAX * 10 - 5));
-        p2 = Vector2D(int(1.0 * rand() / RAND_MAX * 10 - 5),
-                      int(1.0 * rand() / RAND_MAX * 10 - 5));
-        p3 = Vector2D(int(1.0 * rand() / RAND_MAX * 10 - 5),
-                      int(1.0 * rand() / RAND_MAX * 10 - 5));
+    for (int i = 0; i < 1; ++i) {
+      Vector3D p[4];
+      for (int j = 0; j < 4; ++j) {
+        double ra = j < 3 ? 50 : 15, rb = j < 3 ? 10 : 5;
+        for (double dist = 0; dist < 5; ) {
+          p[j].set_x(int(1.0 * rand() / RAND_MAX * ra + rb));
+          p[j].set_y(int(1.0 * rand() / RAND_MAX * ra + rb));
+          p[j].set_z(int(1.0 * rand() / RAND_MAX * ra + rb));
+          dist = 10000;
+          for (int k = 0; k < j; ++k) {
+            dist = std::min(dist, (p[j] - p[k]).Length());
+          }
+        }
       }
-      ChurchMethod church_method(Vector3D(p1 * 10, f * 10),
-                                 Vector3D(p2 * 10, f * 10),
-                                 Vector3D(p3 * 10, f * 10),
-                                 Vector2D(p1.x(), -p1.y()),
-                                 Vector2D(p2.x(), -p2.y()),
-                                 Vector2D(p3.x(), -p3.y()),
-                                 f,
-                                 5000,
-                                 3.14159265358979 / 180 * 0.005);
+      Vector3D x0(p[3].Cross(Vector3D(0, 0, 1)).Normalize());
+      Vector3D y0(x0.Cross(p[3]).Normalize());
+      Vector2D w[3];
+      for (int j = 0; j < 3; ++j) {
+        double t = p[3].Dot(p[3]) / p[j].Dot(p[3]);
+        Vector3D delta(p[j] * t - p[3]);
+        w[j].set_x(x0.Dot(delta));
+        w[j].set_y(y0.Dot(delta));
+      }
+      printf("World: %s   %s   %s\n",
+             p[0].ToString().c_str(), p[1].ToString().c_str(),
+             p[2].ToString().c_str());
+      printf("F %s\n", p[3].ToString().c_str());
+      printf("Photo: %s   %s   %s\n",
+             w[0].ToString().c_str(), w[1].ToString().c_str(),
+             w[2].ToString().c_str());
+      printf("Focal Length = %.3f\n", p[3].Length());
+      ChurchMethod church_method(p[0], p[1], p[2], w[0], w[1], w[2],
+                                 p[3].Length(),
+                                 500,
+                                 3.14159265358979 / 180 * 0.001);
       Vector3D camera = church_method.GetCameraPos();
-      printf("<%.3f, %.3f> <%.3f, %.3f> <%.3f, %.3f>  f(%.5f) =>  <%.3f, %.3f, %.3f>",
-             p1.x(), p1.y(),
-             p2.x(), p2.y(),
-             p3.x(), p3.y(),
-             f,
-             camera.x(), camera.y(), camera.z());
+      printf("Camera: %s\n", camera.ToString().c_str());
       if (camera.Length() >= 3) {
         ret = false;
         printf("    !!\n");

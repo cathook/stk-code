@@ -2,6 +2,6 @@
 
 #ifdef VR_FINAL_TEST
 
-bool webcam::UnitTest::result_;
+bool webcam::UnitTest::result_ = true;
 
 #endif  // VR_FINAL_TEST

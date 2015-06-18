@@ -21,6 +21,10 @@ class Vector2D {
 
   double y() const { return y_; }
 
+  double set_x(double val) { x_ = val; return x(); }
+
+  double set_y(double val) { y_ = val; return y(); }
+
   double Cross(const Vector2D &b) const { return x() * b.y() - y() * b.x(); }
 
   Vector2D operator+(const Vector2D &b) const {
@@ -37,6 +41,10 @@ class Vector2D {
 
   Vector2D operator/(double k) const {
     return Vector2D(x() / k, y() / k);
+  }
+
+  std::string ToString() const {
+    return FormatString("<%.3f, %.3f>", x(), y());
   }
 
  private:
@@ -69,6 +77,16 @@ class Vector3D {
 
   double Dot(const Vector3D &b) const {
     return x() * b.x() + y() * b.y() + z() * b.z();
+  }
+
+  Vector3D Cross(const Vector3D &b) const {
+    return Vector3D(y() * b.z() - z() * b.y(),
+                    z() * b.x() - x() * b.z(),
+                    x() * b.y() - y() * b.x());
+  }
+
+  Vector3D Normalize() const {
+    return *this / Length();
   }
 
   double IncludedCos(const Vector3D &b) const {
