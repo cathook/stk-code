@@ -1,12 +1,12 @@
 CPP = g++
 
-CFLAGS = -std=gnu++0x -DVR_FINAL_TEST -Wall -I..
+CFLAGS = -std=gnu++0x -DVR_FINAL_TEST -Wall -I.. $$(pkg-config --cflags --libs opencv)
 
 CPPS = $(shell ls *.cpp)
 
 
 test: $(CPPS)
-	$(CPP) $(CFLAGS) -o $@ $^
+	$(CPP) $^ $(CFLAGS) -o $@
 
 run: test
 	./test

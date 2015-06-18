@@ -6,13 +6,15 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/opencv.hpp>
 
-#include "webcam/util.hpp"
-#include "webcam/tracker.hpp"
-
 #include <vector>
 #include <iostream>
 #include <cstdio>
 #include <algorithm>
+
+#include "webcam/tracker.hpp"
+
+#include "webcam/util.hpp"
+#include "webcam/vector.hpp"
 
 using namespace std;
 using namespace cv;
@@ -21,7 +23,7 @@ namespace webcam {
 
 Mat getShot(CvCapture* camera) {
   Mat frame, rFrame;
-  
+
   if (!camera) {
     printf("No camera\n");
     return frame;
@@ -101,8 +103,38 @@ bool getScaledDots(Vector2D *left, Vector2D *middle, Vector2D *right) {
   //imshow("result", image);
   //waitKey(0);
   //cvDestroyWindow("result");
-  
+
   return true;
 }
+
+
+#ifdef VR_FINAL_TEST
+
+class Test : public UnitTest {
+ public:
+  Test() : UnitTest("camera test") {
+    Vector2D a, b, c;
+
+    getCamera();
+
+    if (getScaledDots(&a, &b, &c)) {
+      printf("%f %f\n", a.x(), a.y());
+      printf("%f %f\n", b.x(), b.y());
+      printf("%f %f\n", c.x(), c.y());
+    }
+
+    printf("if okey, press [y/Y]: ");
+    char s[100];
+    scanf("%s", s);
+    SetResult(s[0] == 'y' || s[0] == 'Y');
+  }
+  
+ private:
+  static Test _;
+};
+
+Test Test::_;
+
+#endif  // VR_FINAL_TEST
 
 }
