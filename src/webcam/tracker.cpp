@@ -78,7 +78,7 @@ void plotCircles(Mat &image, vector<Vec3f> &circles) {
 }
 
 bool getScaledDots(Vector2D *left, Vector2D *middle, Vector2D *right) {
-  Mat rawImage = getShot(getCamera());
+  Mat rawImage = getShot();
   cvNamedWindow("result", CV_WINDOW_AUTOSIZE);
   Mat image = threshold(rawImage);
   vector<Vec3f> circles = findCircles(image);
