@@ -1,6 +1,5 @@
 //tracker.hpp
 
-
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -19,17 +18,21 @@
 using namespace std;
 using namespace cv;
 
+namespace {
+  CvCapture *Camera;
+}
+
 namespace webcam {
 
-Mat getShot(CvCapture* camera) {
+Mat getShot() {
   Mat frame, rFrame;
 
-  if (!camera) {
-    printf("No camera\n");
+  if (!Camera) {
+    printf("No camera, please call webcam::initCamera()\n");
     return frame;
   }
 
-  IplImage* iplImg = cvQueryFrame(camera);
+  IplImage* iplImg = cvQueryFrame(Camera);
 
   frame = cvarrToMat(iplImg);
   if (frame.empty()) return frame;
@@ -40,11 +43,9 @@ Mat getShot(CvCapture* camera) {
   }
 }
 
-CvCapture* getCamera() {
-  return cvCaptureFromCAM(0);
+void initCamera() {
+  Camera =  cvCaptureFromCAM(0);
 }
-
-
 
 Mat threshold(Mat& image) {
   Mat hsvImage, bitmapLow, bitmapHigh, bitmap;
@@ -84,9 +85,13 @@ bool getScaledDots(Vector2D *left, Vector2D *middle, Vector2D *right) {
 
   plotCircles(rawImage, circles);
   imshow("result", image);
+#ifdef VR_FINAL_TEST
   waitKey(0);
+#endif
   imshow("result", rawImage);
+#ifdef VR_FINAL_TEST
   waitKey(0);
+#endif
   cvDestroyWindow("result");
   if (circles.size() != 3) return false;
 
@@ -100,9 +105,6 @@ bool getScaledDots(Vector2D *left, Vector2D *middle, Vector2D *right) {
   *left = Vector2D(circles[0][0], circles[0][1]);
   *middle = Vector2D(circles[1][0], circles[1][1]);
   *right = Vector2D(circles[2][0], circles[2][1]);
-  //imshow("result", image);
-  //waitKey(0);
-  //cvDestroyWindow("result");
 
   return true;
 }
@@ -115,7 +117,7 @@ class Test : public UnitTest {
   Test() : UnitTest("camera test") {
     Vector2D a, b, c;
 
-    getCamera();
+    initCamera();
 
     if (getScaledDots(&a, &b, &c)) {
       printf("%f %f\n", a.x(), a.y());
