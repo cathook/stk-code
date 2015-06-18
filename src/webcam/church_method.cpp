@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include <algorithm>
+#include <vector>
 
 #include "webcam/church_method.hpp"
 
@@ -110,11 +111,18 @@ bool ChurchMethod::Update_() const {
   size_t ok_ct = 0;
   for (int i = 0; ok_ct < funcs.size() && i < max_round_; ++i) {
     int id = i % funcs.size();
-    double value = funcs[id].GetValue(camera_p_);
-    if (value < eps_) {
+    bool ok = false;
+    for (int j = 0; j < max_round_ && !ok; ++j) {
+      double value = funcs[id].GetValue(camera_p_);
+      if (value < eps_) {
+        ok = true;
+      } else {
+        camera_p_ -= funcs[id].GetDerivValue(camera_p_) * 70;
+      }
+    }
+    if (ok) {
       ok_ct += 1;
     } else {
-      camera_p_ -= funcs[id].GetDerivValue(camera_p_) * 70;
       ok_ct = 0;
     }
   }
@@ -200,7 +208,7 @@ class Test1 : public UnitTest {
     }
     SetResult(ret);
   }
-  
+
  private:
   static Test1 _;
 };
