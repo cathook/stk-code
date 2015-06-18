@@ -3,6 +3,8 @@
 
 #include <math.h>
 
+#include "util.hpp"
+
 
 namespace webcam {
 
@@ -109,6 +111,11 @@ class Vector3D {
     set_y(y() - b.y());
     set_z(z() - b.z());
     return *this;
+  }
+
+
+  std::string ToString() const {
+    return FormatString("<%.3f, %.3f, %.3f>", x(), y(), z());
   }
 
  private:

@@ -6,6 +6,8 @@
 #include "webcam/church_method.hpp"
 
 #include "webcam/util.hpp"
+#include "webcam/vector.hpp"
+#include "webcam/functions.hpp"
 
 
 namespace webcam {
@@ -100,9 +102,9 @@ bool ChurchMethod::Update_() const {
   for (int i = 0; i < 3; ++i) {
     for (int j = i + 1; j < 3; ++j) {
       funcs.push_back(
-          AbsFunction() | (IncludedAngleFunction(world_p_[i], world_p_[j]) -
+          AbsFunction() | (IncludedAngle3DFunction(world_p_[i], world_p_[j]) -
                            ConstantFunction<Vector3D>(
-                               GetIncludedAngle(photo_p_[i], photo_p_[j]))));
+                               photo_p_[i].IncludedAngle(photo_p_[j]))));
     }
   }
   size_t ok_ct = 0;
@@ -124,8 +126,8 @@ bool ChurchMethod2::Update_() const {
   std::vector<Function<Vector3D>> funcs;
   for (int i = 0; i < 3; ++i) {
     for (int j = i + 1; j < 3; ++j) {
-      auto theta = IncludedAngleFunction(world_p_[i], world_p_[j]);
-      auto phi = GetIncludedAngle(photo_p_[i], photo_p_[j]);
+      auto theta = IncludedAngle3DFunction(world_p_[i], world_p_[j]);
+      auto phi = photo_p_[i].IncludedAngle(photo_p_[j]);
       funcs.push_back(theta - ConstantFunction<Vector3D>(phi));
       funcs.back().set_n(2);
     }
@@ -154,5 +156,59 @@ bool ChurchMethod3::FirstUpdate_() const {
   return ok;
 }
 
+#ifdef VR_FINAL_TEST
+
+namespace {
+
+class Test1 : public UnitTest {
+ public:
+  Test1() : UnitTest("church method 1") {
+    bool ret = true;
+    for (int i = 0; i < 10; ++i) {
+      double f = int(1.0 * rand() / RAND_MAX * 5 + 5);
+      Vector2D p1, p2, p3;
+      while (fabs((p2 - p1).Cross(p3 - p1)) < 2) {
+        p1 = Vector2D(int(1.0 * rand() / RAND_MAX * 10 - 5),
+                      int(1.0 * rand() / RAND_MAX * 10 - 5));
+        p2 = Vector2D(int(1.0 * rand() / RAND_MAX * 10 - 5),
+                      int(1.0 * rand() / RAND_MAX * 10 - 5));
+        p3 = Vector2D(int(1.0 * rand() / RAND_MAX * 10 - 5),
+                      int(1.0 * rand() / RAND_MAX * 10 - 5));
+      }
+      ChurchMethod church_method(Vector3D(p1 * 10, f * 10),
+                                 Vector3D(p2 * 10, f * 10),
+                                 Vector3D(p3 * 10, f * 10),
+                                 Vector2D(p1.x(), -p1.y()),
+                                 Vector2D(p2.x(), -p2.y()),
+                                 Vector2D(p3.x(), -p3.y()),
+                                 f,
+                                 5000,
+                                 3.14159265358979 / 180 * 0.005);
+      Vector3D camera = church_method.GetCameraPos();
+      printf("<%.3f, %.3f> <%.3f, %.3f> <%.3f, %.3f>  f(%.5f) =>  <%.3f, %.3f, %.3f>",
+             p1.x(), p1.y(),
+             p2.x(), p2.y(),
+             p3.x(), p3.y(),
+             f,
+             camera.x(), camera.y(), camera.z());
+      if (camera.Length() >= 3) {
+        ret = false;
+        printf("    !!\n");
+      } else {
+        printf("\n");
+      }
+    }
+    SetResult(ret);
+  }
+  
+ private:
+  static Test1 _;
+};
+
+Test1 Test1::_;
+
+}  // namespace
+
+#endif  // VR_FINAL_TEST
 
 };  // namespace webcam
