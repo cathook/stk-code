@@ -195,6 +195,10 @@ if(UNIX AND NOT APPLE)
     endif()
 endif()
 
+# OpenCV
+find_package(OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
+
 # Set some compiler options
 if(UNIX OR MINGW)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x")
@@ -322,6 +326,7 @@ target_link_libraries(supertuxkart
     ${OGGVORBIS_LIBRARIES}
     ${OPENAL_LIBRARY}
     ${OPENGL_LIBRARIES}
+    ${OpenCV_LIBRARIES}
     )
 
 if(UNIX AND NOT APPLE)
