@@ -102,10 +102,6 @@ bool ChurchMethod::Update_() const {
   std::vector<Function<Vector3D>> funcs;
   for (int i = 0; i < 3; ++i) {
     for (int j = i + 1; j < 3; ++j) {
-//      funcs.push_back(
-//          AbsFunction() | (IncludedAngle3DFunction(world_p_[i], world_p_[j]) -
-//                           ConstantFunction<Vector3D>(
-//                               photo_p_[i].IncludedAngle(photo_p_[j]))));
       funcs.push_back(IncludedAngle3DFunction(world_p_[i], world_p_[j]) -
                       ConstantFunction<Vector3D>(
                           photo_p_[i].IncludedAngle(photo_p_[j])));
@@ -118,16 +114,12 @@ bool ChurchMethod::Update_() const {
     int ok_j = -1;
     for (int j = 0; j < max_round_ && ok_j < 0; ++j) {
       double value = funcs[id].GetValue(camera_p_);
-//      printf("camera %s   ", camera_p_.ToString().c_str());
       if (value < eps_) {
-//        printf("\n");
         ok_j = j;
       } else {
-//        printf(" delta = %s\n", funcs[id].GetDerivValue(camera_p_).ToString().c_str());
         camera_p_ -= funcs[id].GetDerivValue(camera_p_) * 50;
       }
     }
-//    printf("next\n");
     if (ok_j == 0) {
       ok_ct += 1;
     } else {
