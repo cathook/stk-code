@@ -160,7 +160,7 @@ bool GetScaledDots2(Vector2D *left, Vector2D *middle, Vector2D *right) {
 
     Point() : x_sum(0), y_sum(0), count(0) {}
 
-    bool operator<(const Point &p) const { return (count < p.count); }
+    bool operator<(const Point &p) const { return (count > p.count); }
   };
   std::map<size_t, Point> ps;
   for (size_t i = 0; i < h; ++i) {
