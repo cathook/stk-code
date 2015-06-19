@@ -1,6 +1,6 @@
 CPP = g++
 
-CFLAGS = -std=gnu++0x -DVR_FINAL_TEST -Wall -I.. $$(pkg-config --cflags --libs opencv)
+CFLAGS = -std=gnu++0x -DVR_FINAL_TEST -Wall -I.. $$(pkg-config --cflags --libs opencv) -pthread -lpthread
 
 CPPS = $(shell ls *.cpp)
 

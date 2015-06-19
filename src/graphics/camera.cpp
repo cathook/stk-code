@@ -398,7 +398,11 @@ void Camera::smoothMoveCamera(float dt)
     Vec3 camera_offset(camera_distance * sin(skid_angle / 2),
                        1.1f * (1 + ratio / 2),
                        camera_distance * cos(skid_angle / 2));// defines how far camera should be from player kart.
-    webcam::AdjustCameraOffset(&camera_offset);
+    auto adjed = webcam::GetAdjustedCameraOffset(
+        webcam::Vector3D(camera_offset.getX(),
+                         camera_offset.getY(),
+                         camera_offset.getZ()));
+    camera_offset = Vec3(adjed.x(), adjed.y(), adjed.z());
     Vec3 m_kart_camera_position_with_offset = m_kart->getTrans()(camera_offset);
 
 
@@ -410,7 +414,7 @@ void Camera::smoothMoveCamera(float dt)
     if ((m_kart->getSpeed() > 5 ) || (m_kart->getSpeed() < 0 ))
     {
         current_position += ((wanted_position - current_position) * dt
-                          * (m_kart->getSpeed()>0 ? m_kart->getSpeed()/3 + 1.0f
+                          * (m_kart->getSpeed()>0 ? m_kart->getSpeed()/1 + 1.0f
                                                  : -1.5f * m_kart->getSpeed() + 2.0f));
     }
     else

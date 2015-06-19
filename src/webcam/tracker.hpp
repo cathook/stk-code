@@ -12,6 +12,8 @@ double GetAspectRatio();
 
 bool GetScaledDots(Vector2D *left, Vector2D *middle, Vector2D *right);
 
+bool GetScaledDots2(Vector2D *left, Vector2D *middle, Vector2D *right);
+
 }  // webcam
 
 #endif  // WEBCAM_TRACKER_HPP

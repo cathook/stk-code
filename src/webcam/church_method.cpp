@@ -80,7 +80,7 @@ Vector3D ChurchMethod::GetCameraPos() const {
   return camera_p_;
 }
 
-void ChurchMethod::InitialGuest_() const {
+void ChurchMethod::InitialGuess_() const {
   double r = 30;
   for (double d = 0; d <= 5; ) {
     camera_p_.set_x(1.0 * rand() / RAND_MAX * r * 2 - r);
@@ -94,7 +94,7 @@ void ChurchMethod::InitialGuest_() const {
 }
 
 bool ChurchMethod::FirstUpdate_() const {
-  InitialGuest_();
+  InitialGuess_();
   return Update_();
 }
 
@@ -124,7 +124,7 @@ bool ChurchMethod::Update_() const {
         ok_j = j;
       } else {
 //        printf(" delta = %s\n", funcs[id].GetDerivValue(camera_p_).ToString().c_str());
-        camera_p_ -= funcs[id].GetDerivValue(camera_p_) * 60;
+        camera_p_ -= funcs[id].GetDerivValue(camera_p_) * 50;
       }
     }
 //    printf("next\n");
@@ -156,7 +156,7 @@ bool ChurchMethod2::Update_() const {
     if (func(camera_p_) < eps_) {
       return true;
     } else {
-      camera_p_ -= func.GetDerivValue(camera_p_) * 100;
+      camera_p_ -= func.GetDerivValue(camera_p_) * 150;
     }
   }
   return false;
@@ -166,7 +166,7 @@ bool ChurchMethod2::Update_() const {
 bool ChurchMethod3::FirstUpdate_() const {
   bool ok = false;
   for (int i = 0; i < 100 && !ok; ++i) {
-    InitialGuest_();
+    InitialGuess_();
     ok = Update_();
   }
   return ok;

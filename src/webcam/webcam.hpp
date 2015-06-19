@@ -1,14 +1,14 @@
 #ifndef WEBCAM_WEBCAM_HPP
 #define WEBCAM_WEBCAM_HPP
 
-#include "utils/vec3.hpp"
+#include "webcam/vector.hpp"
 
 
 namespace webcam {
 
 void Init();
 
-void AdjustCameraOffset(Vec3 *offs);
+Vector3D GetAdjustedCameraOffset(Vector3D org);
 
 
 }  // namespace webcam

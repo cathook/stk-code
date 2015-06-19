@@ -34,7 +34,7 @@ class ChurchMethod {
   Vector3D GetCameraPos() const;
 
  protected:
-  virtual void InitialGuest_() const;
+  virtual void InitialGuess_() const;
 
   virtual bool FirstUpdate_() const;
 
@@ -69,6 +69,34 @@ class ChurchMethod2 : public ChurchMethod {
 
  protected:
   bool Update_() const;
+};
+
+
+class ChurchMethodFirstGuess : public ChurchMethod {
+ public:
+  ChurchMethodFirstGuess(const Vector3D &world_p1,
+                         const Vector3D &world_p2,
+                         const Vector3D &world_p3,
+                         const Vector2D &photo_p1,
+                         const Vector2D &photo_p2,
+                         const Vector2D &photo_p3,
+                         const Vector3D &first_guess,
+                         double focal_length,
+                         int max_round,
+                         double eps = 1e-1) :
+      ChurchMethod(world_p1, world_p2, world_p3,
+                   photo_p1, photo_p2, photo_p3,
+                   focal_length, max_round, eps), first_guess_(first_guess) {
+    camera_p_ = first_guess;
+  }
+
+ protected:
+  void InitialGuess_() const {
+    camera_p_ = first_guess_;
+  }
+
+ private:
+  Vector3D first_guess_;
 };
 
 
