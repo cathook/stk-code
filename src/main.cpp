@@ -204,6 +204,7 @@
 #include "utils/leak_check.hpp"
 #include "utils/log.hpp"
 #include "utils/translation.hpp"
+#include "webcam/webcam.hpp"
 
 static void cleanSuperTuxKart();
 static void cleanUserConfig();
@@ -1245,6 +1246,8 @@ void askForInternetPermission()
 // ----------------------------------------------------------------------------
 int main(int argc, char *argv[] )
 {
+    webcam::Init();
+
     CommandLine::init(argc, argv);
 
     CrashReporting::installHandlers();

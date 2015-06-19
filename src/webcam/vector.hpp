@@ -33,6 +33,15 @@ class Vector2D {
 
   double Length() const { return sqrt(Length2()); }
 
+  Vector2D Normalize() const { return *this / Length(); }
+
+  Vector2D Rotate(double angle) const {
+    Vector2D i(cos(-angle), sin(-angle)), j(~i);
+    return Vector2D(Dot(i), Dot(j));
+  }
+
+  Vector2D operator~() const { return Vector2D(-y(), x()); }
+
   Vector2D operator+(const Vector2D &b) const {
     return Vector2D(x() + b.x(), y() + b.y());
   }

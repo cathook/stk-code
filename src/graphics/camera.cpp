@@ -37,6 +37,7 @@
 #include "utils/aligned_array.hpp"
 #include "utils/constants.hpp"
 #include "utils/vs.hpp"
+#include "webcam/webcam.hpp"
 
 #include "ICameraSceneNode.h"
 #include "ISceneManager.h"
@@ -397,6 +398,7 @@ void Camera::smoothMoveCamera(float dt)
     Vec3 camera_offset(camera_distance * sin(skid_angle / 2),
                        1.1f * (1 + ratio / 2),
                        camera_distance * cos(skid_angle / 2));// defines how far camera should be from player kart.
+    webcam::AdjustCameraOffset(&camera_offset);
     Vec3 m_kart_camera_position_with_offset = m_kart->getTrans()(camera_offset);
 
 
