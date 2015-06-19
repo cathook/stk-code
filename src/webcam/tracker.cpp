@@ -58,7 +58,7 @@ void InitTracker() {
   }
 }
 
-double GetAspectRaitio() {
+double GetAspectRatio() {
   return aspect_ratio;
 }
 
