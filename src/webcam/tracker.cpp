@@ -51,14 +51,16 @@ Mat GetShot() {
 
 void InitTracker() {
   camera =  cvCaptureFromCAM(0);
-  // TODO: aspect_ratio = ??
+  if (!camera) printf("No camera found\n");
+  else {
+    IplImage* iplImage = cvQueryFrame(camera);
+    aspect_ratio = (double)iplImage->height / iplImage->width;
+  }
 }
 
-
-double GetAspectRatio() {
+double GetAspectRaitio() {
   return aspect_ratio;
 }
-
 
 Mat Threshold(Mat& image) {
   Mat hsvImage, bitmapLow, bitmapHigh, bitmap;
@@ -136,6 +138,8 @@ class Test : public UnitTest {
     Vector2D a, b, c;
 
     InitTracker();
+
+    printf("Aspect ratio is : %f \n", aspect_ratio);
 
     if (GetScaledDots(&a, &b, &c)) {
       printf("%f %f\n", a.x(), a.y());
