@@ -61,6 +61,7 @@ ChurchMethod *church_;
 
 void *MainThread_(void *) {
   Vector2D p1, p2, p3;
+  double last_hori = 0, rat = 0.6;
   while (true) {
     if (GetScaledDots2(&p1, &p2, &p3)) {
       p1.set_y(p1.y() * GetAspectRatio());
@@ -75,8 +76,11 @@ void *MainThread_(void *) {
 
       double l = Vector2D(pos.x(), pos.z()).Length();
 
-      double hori = -atan2(-pos.x(), -pos.z()) * 2;
+      double hori = atan2(-pos.x(), -pos.z());
       double vert = atan2(-pos.y(), l);
+
+      hori = (1 - rat) * last_hori + rat * hori;
+      last_hori = hori;
       vert = 0;
       info_.SetAngle(hori, vert);
 
@@ -112,11 +116,11 @@ Vector3D GetAdjustedCameraOffset(Vector3D org) {
   double hori, vert;
   info_.GetAngle(&hori, &vert);
 
-  Vector2D xy(org.x(), org.y());
-  Vector2D z(xy.Length(), org.z());
+  Vector2D xy(org.x(), org.z());
+  Vector2D z(xy.Length(), org.y());
   z = z.Rotate(vert);
   xy = (xy.Normalize() * z.x()).Rotate(hori);
-  return Vector3D(xy.x(), xy.y(), z.y());
+  return Vector3D(xy.x(), z.y(), xy.y());
 }
 
 }  // namespace webcam
