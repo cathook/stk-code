@@ -65,7 +65,7 @@ double GetAspectRaitio() {
 Mat Threshold(Mat& image) {
   Mat hsvImage, bitmapLow, bitmapHigh, bitmap;
   cvtColor(image, hsvImage, COLOR_BGR2HSV);
-  inRange(hsvImage, Scalar(50,100,100), Scalar(160,255,255), bitmap);
+  inRange(hsvImage, Scalar(90,100,100), Scalar(180,255,255), bitmap);
   GaussianBlur(bitmap, bitmap, Size(9, 9), 2, 2);
   return bitmap;
 }
@@ -81,7 +81,7 @@ vector<Vec3f> FindCircles(Mat &image_) {
   image_.convertTo(image, CV_8U);
   vector<Vec3f> circles;
   HoughCircles(
-      image, circles, CV_HOUGH_GRADIENT, 1, image.rows / 100, 100, 25, 0, 0);
+      image, circles, CV_HOUGH_GRADIENT, 1, image.rows / 10, 100, 30, 0, 0);
   printf("find %lu circles\n", circles.size());
   sort(circles.begin(), circles.end(), CircleSort);
   return circles;
