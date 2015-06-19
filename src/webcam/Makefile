@@ -1,12 +1,14 @@
 CPP = g++
 
-CFLAGS = -std=gnu++0x -DVR_FINAL_TEST -Wall -I.. $$(pkg-config --cflags --libs opencv) -pthread -lpthread
+MACROS = -DVR_FINAL_TEST -DTRACKER_TEST $(OPTS)
+
+CFLAGS = -std=gnu++0x -Wall -I.. $$(pkg-config --cflags --libs opencv) -pthread -lpthread
 
 CPPS = $(shell ls *.cpp)
 
 
 test: $(CPPS)
-	$(CPP) $^ $(CFLAGS) -o $@
+	$(CPP) $^ $(MACROS) $(CFLAGS) -o $@
 
 run: test
 	./test

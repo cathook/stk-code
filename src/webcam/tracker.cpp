@@ -130,7 +130,7 @@ bool GetScaledDots(Vector2D *left, Vector2D *middle, Vector2D *right) {
 
 bool GetScaledDots2(Vector2D *left, Vector2D *middle, Vector2D *right) {
   Mat raw_image = GetShot();
-  
+
   GaussianBlur(raw_image, raw_image, Size(7, 7), 1.5, 1.5);
 
   size_t h = raw_image.size().height;
@@ -214,6 +214,8 @@ bool GetScaledDots2(Vector2D *left, Vector2D *middle, Vector2D *right) {
 
 #ifdef VR_FINAL_TEST
 
+#ifdef TRACKER_TEST
+
 class Test : public UnitTest {
  public:
   Test() : UnitTest("camera test") {
@@ -268,6 +270,8 @@ class Test2 : public UnitTest {
 };
 
 Test2 Test2::_;
+
+#endif  // TRACKER_TEST
 
 #endif  // VR_FINAL_TEST
 
