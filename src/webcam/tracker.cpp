@@ -50,13 +50,17 @@ Mat GetShot() {
 
 
 void InitTracker() {
-  camera =  cvCaptureFromCAM(0);
-  if (!camera) printf("No camera found\n");
-  else {
-    IplImage* iplImage = cvQueryFrame(camera);
-    aspect_ratio = (double)iplImage->height / iplImage->width;
+  static bool inited_ = false;
+  if (!inited_) {
+    inited_ = true;
+    camera =  cvCaptureFromCAM(0);
+    if (!camera) printf("No camera found\n");
+    else {
+      IplImage* iplImage = cvQueryFrame(camera);
+      aspect_ratio = (double)iplImage->height / iplImage->width;
+    }
+    cvNamedWindow("result", CV_WINDOW_AUTOSIZE);
   }
-  cvNamedWindow("result", CV_WINDOW_AUTOSIZE);
 }
 
 double GetAspectRatio() {
