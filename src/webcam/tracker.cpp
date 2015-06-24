@@ -108,14 +108,7 @@ bool GetScaledDots(Vector2D *left, Vector2D *middle, Vector2D *right) {
   vector<Vec3f> circles = FindCircles(image);
 
   PlotCircles(rawImage, circles);
-//  imshow("result", image);
-#ifdef VR_FINAL_TEST
-  waitKey(0);
-#endif  // VR_FINAL_TEST
   imshow("result", rawImage);
-#ifdef VR_FINAL_TEST
-  waitKey(0);
-#endif  // VR_FINAL_TEST
   if (circles.size() != 3) return false;
 
   double normX = image.cols / 2;
@@ -223,23 +216,20 @@ bool GetScaledDots2(Vector2D *left, Vector2D *middle, Vector2D *right) {
 class Test : public UnitTest {
  public:
   Test() : UnitTest("camera test") {
-    return;
     Vector2D a, b, c;
 
     InitTracker();
 
-    printf("Aspect ratio is : %f \n", aspect_ratio);
-
-    if (GetScaledDots(&a, &b, &c)) {
-      printf("%6.3f %6.3f\n", a.x(), a.y());
-      printf("%6.3f %6.3f\n", b.x(), b.y());
-      printf("%6.3f %6.3f\n", c.x(), c.y());
+    int key;
+    printf("Press [y/Y] if it run pretty well. \n");
+    while ((key = waitKey(20)) == -1) {
+      if (GetScaledDots(&a, &b, &c)) {
+        printf("<%6.3f %6.3f>  <%6.3f %6.3f>  <%6.3f %6.3f>\n",
+               a.x(), a.y(), b.x(), b.y(), c.x(), c.y());
+      }
     }
 
-    printf("if okey, press [y/Y]: ");
-    char s[100];
-    scanf("%s", s);
-    SetResult(s[0] == 'y' || s[0] == 'Y');
+    SetResult(key == 'y' || key == 'Y');
   }
 
  private:
@@ -257,12 +247,11 @@ class Test2 : public UnitTest {
     InitTracker();
 
     int key;
+    printf("Press [y/Y] if it run pretty well. \n");
     while ((key = waitKey(20)) == -1) {
       if (GetScaledDots2(&a, &b, &c)) {
         printf("<%6.3f %6.3f>  <%6.3f %6.3f>  <%6.3f %6.3f>\n",
                a.x(), a.y(), b.x(), b.y(), c.x(), c.y());
-      } else {
-        printf("no\n");
       }
     }
 
